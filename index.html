@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1557a6">
+<title>Paaji ki पाठशाला</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--blue:#1557a6;--blue2:#2878d0;--pale:#eaf3ff;--ink:#17263c;--muted:#66758b}
+*{box-sizing:border-box}body{margin:0;background:#f4f8fd;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#104582,#2878d0);color:white;padding:22px 18px 26px;border-radius:0 0 24px 24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:11px}.logo{width:46px;height:46px;border-radius:14px;background:white;color:var(--blue);display:grid;place-items:center;font-size:25px;font-weight:800}
+h1{font-size:21px;margin:0}header p{margin:5px 0 0;color:#dcecff;font-size:13px}
+button,select{font:inherit}button{border:0;border-radius:12px;padding:11px 14px;background:var(--blue);color:white;font-weight:650;cursor:pointer}
+.lang{background:white;color:var(--blue);padding:8px 11px}
+main{max-width:760px;margin:auto;padding:17px}
+.welcome{margin:2px 0 15px}.welcome h2{font-size:20px;margin:0 0 4px}.welcome p{margin:0;color:var(--muted);font-size:14px}
+.section-title{font-weight:750;margin:20px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:white;border:1px solid #e2eaf5;border-radius:16px;padding:15px;text-align:left;color:var(--ink);box-shadow:0 3px 12px #183d6410}
+.tile .emoji{font-size:24px}.tile strong{display:block;margin-top:7px}.tile small{color:var(--muted)}
+.panel{background:white;border:1px solid #e2eaf5;border-radius:16px;padding:15px;margin-top:13px}
+select{width:100%;padding:12px;border:1px solid #cbd8e8;border-radius:12px;background:white;color:var(--ink);margin:5px 0 10px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row button{flex:1}
+.item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #edf1f7}.item:last-child{border:0}.pdficon{font-size:24px}
+.item div{flex:1}.item small{display:block;color:var(--muted);margin-top:3px}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.hidden{display:none!important}.back{background:#e7f0fc;color:var(--blue);margin-bottom:12px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 10px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+ <div class="top">
+  <div class="brand"><div class="logo">प</div><div><h1>Paaji ki पाठशाला</h1><p>Learn Today, Lead Tomorrow</p></div></div>
+  <button class="lang" id="langBtn" onclick="toggleLang()">हिन्दी</button>
+ </div>
+</header>
+<main>
+ <section id="home">
+  <div class="welcome"><h2 id="welcomeTitle">Welcome, Student!</h2><p id="welcomeSub">Choose your board and class to find study notes.</p></div>
+  <div class="section-title" id="boardTitle">Choose Board / बोर्ड चुनें</div>
+  <div class="grid" id="boards"></div>
+  <div class="section-title" id="classTitle">Choose Class / कक्षा चुनें</div>
+  <div class="grid" id="classes"></div>
+  <div class="panel">
+   <strong id="quickTitle">Your study library</strong>
+   <p class="muted" id="quickText">Select a board and class. Subject-wise notes and PDF materials will appear here when added by the app owner.</p>
+  </div>
+ </section>
+ <section id="subjects" class="hidden">
+  <button class="back" onclick="goHome()" id="backBtn">← Back</button>
+  <h2 id="subjectHeading">Subjects</h2>
+  <p class="muted" id="subjectSub"></p>
+  <div class="grid" id="subjectGrid"></div>
+ </section>
+ <section id="materials" class="hidden">
+  <button class="back" onclick="goSubjects()" id="back2">← Back</button>
+  <h2 id="materialHeading">Study Material</h2>
+  <p class="muted" id="materialSub"></p>
+  <div class="panel">
+   <div class="item"><span class="pdficon">📄</span><div><strong id="sampleTitle">Sample notes coming soon</strong><small id="sampleDesc">Add your own PDF files to the published library.</small></div></div>
+   <p class="muted" id="ownerNote">This starter app is ready for your authorised notes and PDFs. No copyrighted textbooks are included.</p>
+  </div>
+ </section>
+</main>
+<footer>Paaji ki पाठशाला · Blue + White · Hindi & English</footer>
+<script>
+const boards=["ICSE","CBSE","UP Board","Other Boards"];
+const classes=["Class 9","Class 10","Class 11","Class 12"];
+const subjects={
+ "Class 9":["Mathematics","Science","English","Hindi","Social Studies","Computer"],
+ "Class 10":["Mathematics","Physics","Chemistry","Biology","English","Hindi","History & Civics","Geography","Computer Applications"],
+ "Class 11":["Physics","Chemistry","Mathematics","Biology","English","Computer Science","Accountancy","Business Studies","Economics"],
+ "Class 12":["Physics","Chemistry","Mathematics","Biology","English","Computer Science","Accountancy","Business Studies","Economics"]
+};
+let lang="en",board="",cls="",subject="";
+const $=id=>document.getElementById(id);
+function t(en,hi){return lang==="en"?en:hi}
+function render(){
+ $("langBtn").textContent=lang==="en"?"हिन्दी":"English";
+ $("welcomeTitle").textContent=t("Welcome, Student!","स्वागत है विद्यार्थी!");
+ $("welcomeSub").textContent=t("Choose your board and class to find study notes.","नोट्स देखने के लिए अपना बोर्ड और कक्षा चुनें।");
+ $("boardTitle").textContent=t("Choose Board / बोर्ड चुनें","बोर्ड चुनें / Choose Board");
+ $("classTitle").textContent=t("Choose Class / कक्षा चुनें","कक्षा चुनें / Choose Class");
+ $("quickTitle").textContent=t("Your study library","आपकी स्टडी लाइब्रेरी");
+ $("quickText").textContent=t("Select a board and class. Subject-wise notes and PDF materials will appear here when added by the app owner.","बोर्ड और कक्षा चुनें। ऐप में सामग्री जोड़े जाने पर विषयवार नोट्स और PDF यहाँ दिखेंगे।");
+ $("backBtn").textContent=t("← Back","← वापस");
+ $("back2").textContent=t("← Back","← वापस");
+ $("sampleTitle").textContent=t("Study PDFs will appear here","स्टडी PDF यहाँ दिखाई देंगी");
+ $("sampleDesc").textContent=t("The library is ready for authorised PDF uploads.","लाइब्रेरी में अधिकृत PDF जोड़ी जा सकती हैं।");
+ $("ownerNote").textContent=t("This is the first mobile starter version. It does not yet contain uploaded study PDFs.","यह पहला मोबाइल स्टार्टर वर्जन है। इसमें अभी स्टडी PDF अपलोड नहीं की गई हैं।");
+ $("boards").innerHTML=boards.map((b,i)=>`<button class="tile" onclick="pickBoard('${b}')"><span class="emoji">${["🎓","📘","📚","🏫"][i]}</span><strong>${b}</strong><small>${t("Select board","बोर्ड चुनें")}</small></button>`).join("");
+ $("classes").innerHTML=classes.map((c,i)=>`<button class="tile" onclick="pickClass('${c}')"><span class="emoji">${["📖","📝","🔬","🎯"][i]}</span><strong>${c}</strong><small>${t("View subjects","विषय देखें")}</small></button>`).join("");
+}
+function toggleLang(){lang=lang==="en"?"hi":"en";render();if(!$("subjects").classList.contains("hidden"))showSubjects();if(!$("materials").classList.contains("hidden"))showMaterials()}
+function pickBoard(b){board=b; if(cls)showSubjects();else alert(t("Now choose a class.","अब अपनी कक्षा चुनें।"))}
+function pickClass(c){cls=c;if(board)showSubjects();else alert(t("Please choose a board first.","पहले अपना बोर्ड चुनें।"))}
+function showSubjects(){
+ $("home").classList.add("hidden");$("materials").classList.add("hidden");$("subjects").classList.remove("hidden");
+ $("subjectHeading").textContent=t("Choose a subject","विषय चुनें");
+ $("subjectSub").textContent=board+" · "+cls;
+ $("subjectGrid").innerHTML=subjects[cls].map((s,i)=>`<button class="tile" onclick="pickSubject('${s.replace(/'/g,"\\'")}')"><span class="emoji">${["📘","🧪","📐","🧬","✍️","💻","🌍","📊","📚"][i%9]}</span><strong>${s}</strong><small>${t("Notes & PDFs","नोट्स और PDF")}</small></button>`).join("");
+}
+function pickSubject(s){subject=s;showMaterials()}
+function showMaterials(){
+ $("home").classList.add("hidden");$("subjects").classList.add("hidden");$("materials").classList.remove("hidden");
+ $("materialHeading").textContent=subject;
+ $("materialSub").textContent=board+" · "+cls+" · "+subject;
+}
+function goHome(){$("subjects").classList.add("hidden");$("materials").classList.add("hidden");$("home").classList.remove("hidden")}
+function goSubjects(){$("materials").classList.add("hidden");showSubjects()}
+render();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+</script>
+</body></html>
